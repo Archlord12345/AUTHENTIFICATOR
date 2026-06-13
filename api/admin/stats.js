@@ -8,10 +8,36 @@ export default async function handler(req, res) {
     const totalUsers = await prisma.user.count();
     const totalLogins = await prisma.loginLog.count();
     
+    const googleSuccess = await prisma.loginLog.count({
+      where: { provider: 'google', status: 'success' }
+    });
+    const googleFailure = await prisma.loginLog.count({
+      where: { provider: 'google', status: 'failure' }
+    });
+    
+    const githubSuccess = await prisma.loginLog.count({
+      where: { provider: 'github', status: 'success' }
+    });
+    const githubFailure = await prisma.loginLog.count({
+      where: { provider: 'github', status: 'failure' }
+    });
+
+    const totalSuccess = await prisma.loginLog.count({
+      where: { status: 'success' }
+    });
+    const totalFailure = await prisma.loginLog.count({
+      where: { status: 'failure' }
+    });
+    
     const recentLogins = await prisma.loginLog.findMany({
-      take: 10,
+      take: 20,
       orderBy: { timestamp: 'desc' },
       include: { user: true }
+    });
+
+    const users = await prisma.user.findMany({
+      take: 20,
+      orderBy: { createdAt: 'desc' }
     });
 
     const loginsByApp = await prisma.loginLog.groupBy({
@@ -31,7 +57,14 @@ export default async function handler(req, res) {
     res.status(200).json({
       totalUsers,
       totalLogins,
+      googleSuccess,
+      googleFailure,
+      githubSuccess,
+      githubFailure,
+      totalSuccess,
+      totalFailure,
       recentLogins,
+      users,
       loginsByApp,
       loginsByProvider
     });
