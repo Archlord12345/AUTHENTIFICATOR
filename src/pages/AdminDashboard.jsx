@@ -53,6 +53,38 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* API Tester Section */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="flex items-center space-x-2 mb-6 text-orange-600">
+          <Zap size={20} />
+          <h2 className="text-lg font-semibold">Zone de Test API</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 className="font-medium text-gray-800 mb-2">Test Google Auth</h3>
+            <p className="text-sm text-gray-600 mb-4">Simule une requête d'authentification Google avec une app de test.</p>
+            <button 
+              onClick={() => window.open(`/api/auth/google?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')}
+              className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+            >
+              <Globe size={16} />
+              <span>Tester Google</span>
+            </button>
+          </div>
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 className="font-medium text-gray-800 mb-2">Test GitHub Auth</h3>
+            <p className="text-sm text-gray-600 mb-4">Simule une requête d'authentification GitHub avec une app de test.</p>
+            <button 
+              onClick={() => window.open(`/api/auth/github?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')}
+              className="w-full py-2 bg-gray-900 text-white rounded-md hover:bg-black transition flex items-center justify-center space-x-2"
+            >
+              <GitHub size={16} />
+              <span>Tester GitHub</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Logins by App */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
