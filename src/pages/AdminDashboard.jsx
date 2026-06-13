@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Users, Activity, Globe, Github } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+
+const { Users, Activity, Globe } = LucideIcons;
+const Github = LucideIcons.Github || LucideIcons.GitHub;
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
