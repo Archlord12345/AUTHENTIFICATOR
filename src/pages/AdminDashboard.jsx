@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
   Users, Activity, ArrowLeft, RefreshCw, ExternalLink, CheckCircle, XCircle,
-  Clock, Mail, Shield, BarChart3, TrendingUp
+  Clock, Mail, Shield, BarChart3, TrendingUp,
+  Files, GitBranch, Settings, User, ChevronDown, ChevronRight,
+  FileCode, Terminal, Braces
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [explorerOpen, setExplorerOpen] = useState(true);
 
   const fetchStats = async (isRefresh = false) => {
     try {
@@ -58,261 +61,450 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+    <div className="h-screen flex flex-col bg-[#050b18] text-slate-100 overflow-hidden font-sans select-none">
+      
+      {/* Main IDE Workspace */}
+      <div className="flex-1 flex overflow-hidden">
+        
+        {/* 1. Activity Bar */}
+        <div className="w-14 bg-[#030710] border-r border-blue-950/40 flex flex-col items-center justify-between py-4 flex-shrink-0">
+          <div className="flex flex-col items-center gap-6 w-full">
+            {/* Logo */}
+            <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/10 mb-2">
+              <Shield className="w-4.5 h-4.5 text-white" />
+            </div>
+            
+            {/* Action Icons */}
+            <button 
+              onClick={() => setExplorerOpen(!explorerOpen)}
+              className={`p-2.5 rounded-xl transition-colors relative group ${explorerOpen ? 'text-blue-400 bg-blue-500/10' : 'text-slate-400 hover:text-slate-200'}`}
+              title="Explorateur de fichiers"
+            >
+              <Files className="w-5.5 h-5.5" />
+              <span className="absolute left-14 top-2 bg-slate-900 text-xs font-semibold px-2 py-1 rounded shadow-md border border-slate-800 hidden group-hover:block whitespace-nowrap z-50">Explorateur</span>
+            </button>
+            
+            <Link 
+              to="/" 
+              className="p-2.5 rounded-xl text-slate-400 hover:text-slate-200 transition-colors relative group"
+              title="Documentation API"
+            >
+              <FileCode className="w-5.5 h-5.5" />
+              <span className="absolute left-14 top-2 bg-slate-900 text-xs font-semibold px-2 py-1 rounded shadow-md border border-slate-800 hidden group-hover:block whitespace-nowrap z-50">API Docs</span>
+            </Link>
+            
+            <button 
+              className="p-2.5 rounded-xl text-blue-400 bg-blue-500/10 transition-colors relative group"
+              title="Console Admin"
+            >
+              <Terminal className="w-5.5 h-5.5" />
+              <span className="absolute left-14 top-2 bg-slate-900 text-xs font-semibold px-2 py-1 rounded shadow-md border border-slate-800 hidden group-hover:block whitespace-nowrap z-50">Admin Console</span>
+            </button>
+          </div>
+          
+          {/* Bottom Icons */}
+          <div className="flex flex-col items-center gap-4 w-full">
+            <div className="p-2.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+              <User className="w-5 h-5" />
+            </div>
+            <div className="p-2.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+              <Settings className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+
+        {/* 2. File Explorer Sidebar */}
+        {explorerOpen && (
+          <div className="w-60 bg-[#090f1d] border-r border-blue-950/20 flex flex-col flex-shrink-0 select-none">
+            <div className="px-4 py-3 border-b border-blue-950/10 flex items-center justify-between">
+              <span className="text-xs font-extrabold text-slate-400 tracking-wider uppercase">Explorateur</span>
+              <span className="text-[10px] bg-blue-500/10 text-blue-400 font-bold px-1.5 py-0.5 rounded border border-blue-500/20">WORKSPACE</span>
+            </div>
+            
+            {/* File Tree */}
+            <div className="flex-1 overflow-y-auto p-2 text-sm">
+              <div className="mb-2">
+                {/* Project Root Folder */}
+                <div className="flex items-center gap-1.5 px-2 py-1.5 text-slate-300 font-bold text-xs">
+                  <ChevronDown className="w-4 h-4 text-slate-500" />
+                  <span className="tracking-wide">AUTHENTIFICTOR-API</span>
+                </div>
+                
+                {/* Folders */}
+                <div className="pl-4 space-y-1">
+                  <div className="flex items-center gap-1.5 px-2 py-1 text-slate-400 font-semibold text-xs">
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                    <span>src</span>
+                  </div>
+                  
+                  <div className="pl-3 space-y-1">
+                    <div className="flex items-center gap-1.5 px-2 py-1 text-slate-400 font-semibold text-xs">
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                      <span>pages</span>
+                    </div>
+                    
+                    {/* Files */}
+                    <div className="pl-3 space-y-0.5">
+                      <Link 
+                        to="/" 
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 text-xs font-medium cursor-pointer"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                        <span>Login.jsx</span>
+                      </Link>
+                      <Link 
+                        to="/admin" 
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/10 text-xs font-medium cursor-pointer"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                        <span>AdminDashboard.jsx</span>
+                      </Link>
+                    </div>
+                  </div>
+                  
+                  {/* index.css */}
+                  <div className="pl-3.5">
+                    <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 text-xs font-medium">
+                      <Braces className="w-3.5 h-3.5 text-blue-400" />
+                      <span>index.css</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* schema.prisma */}
+                <div className="pl-4 mt-2">
+                  <Link 
+                    to="/" 
+                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 text-xs font-medium"
+                  >
+                    <Code className="w-3.5 h-3.5 text-yellow-500" />
+                    <span>schema.prisma</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 3. Main Editor Window */}
+        <div className="flex-1 flex flex-col overflow-hidden bg-[#050b18] relative">
+          
+          {/* Background glow blobs */}
+          <div className="glow-blob bg-blue-600/10 top-[20%] left-[10%]"></div>
+          <div className="glow-blob bg-cyan-500/5 bottom-[20%] right-[10%]"></div>
+
+          {/* IDE Tabs Bar */}
+          <div className="h-10 bg-[#090f1d] border-b border-blue-950/20 flex items-center justify-between px-2 select-none flex-shrink-0">
+            <div className="flex items-center gap-1">
+              <Link 
+                to="/" 
+                className="flex items-center gap-2 px-4 py-2 hover:bg-slate-800/20 rounded-t-lg text-xs font-medium text-slate-400 hover:text-slate-355 border-r border-blue-950/10"
+              >
+                <Shield className="w-3.5 h-3.5 text-slate-500" />
+                <span>Login.jsx</span>
+              </Link>
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#050b18] border-t-2 border-blue-500 rounded-t-lg text-xs font-semibold text-blue-300 border-r border-blue-950/20">
+                <Terminal className="w-3.5 h-3.5 text-blue-400" />
+                <span>AdminDashboard.jsx</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-1"></span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 text-slate-500 text-xs font-mono mr-2">
+              <span className="bg-slate-800/50 px-2 py-0.5 rounded border border-slate-700/30 text-slate-400">PREVIEW MODE</span>
+            </div>
+          </div>
+
+          {/* Breadcrumbs Bar */}
+          <div className="px-6 py-2 bg-[#050c1b]/60 border-b border-blue-950/10 text-xs text-slate-400 flex items-center gap-1.5 select-none flex-shrink-0 font-mono">
+            <span>src</span>
+            <span>&gt;</span>
+            <span>pages</span>
+            <span>&gt;</span>
+            <span className="text-blue-300 font-semibold">AdminDashboard.jsx</span>
+          </div>
+
+          {/* Editor Header Row with title and Refresh Button */}
+          <div className="px-6 py-4 bg-[#050b18] border-b border-blue-950/10 flex items-center justify-between select-none flex-shrink-0 relative z-20">
             <div className="flex items-center gap-4">
               <Link
                 to="/"
-                className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Retour
               </Link>
-              <div className="h-4 w-px bg-gray-200" />
+              <div className="h-4 w-px bg-blue-950/40" />
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-7 h-7 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-md shadow-blue-600/10">
                   <Shield className="w-4 h-4 text-white" />
                 </div>
-                <div>
-                  <span className="font-semibold text-gray-900">Admin Dashboard</span>
-                </div>
+                <span className="font-bold text-sm text-slate-100 tracking-tight">Console d'administration</span>
               </div>
             </div>
+            
             <button
               onClick={() => fetchStats(true)}
               disabled={refreshing}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-200 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 rounded-xl transition-all duration-200 shadow-sm disabled:opacity-50 active:scale-95 cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${refreshing ? 'animate-spin' : ''}`} />
               Actualiser
             </button>
           </div>
-        </div>
-      </header>
 
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-4" />
-              <p className="text-gray-500">Chargement...</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-600">Utilisateurs</span>
-                  <Users className="w-4 h-4 text-gray-400" />
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stats?.totalUsers || 0}
-                </div>
+          {/* Editor Scrollable Panel (Active page content is loaded here) */}
+          <div className="flex-1 overflow-y-auto relative z-10 p-6 scroll-smooth">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-32">
+                <div className="w-12 h-12 rounded-full border-4 border-blue-500/20 border-t-blue-500 animate-spin mb-4"></div>
+                <p className="text-slate-400 font-medium animate-pulse text-xs">Chargement des données...</p>
               </div>
-
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-600">Connexions</span>
-                  <Activity className="w-4 h-4 text-gray-400" />
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stats?.totalLogins || 0}
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-600">Google</span>
-                  {getProviderIcon('google')}
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stats?.loginsByProvider?.find(p => p.provider === 'google')?._count?.id || 0}
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-gray-600">GitHub</span>
-                  {getProviderIcon('github')}
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stats?.loginsByProvider?.find(p => p.provider === 'github')?._count?.id || 0}
-                </div>
-              </div>
-            </div>
-
-            {/* Test Section */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="w-5 h-5 text-gray-600" />
-                <h2 className="font-semibold text-gray-900">Zone de test</h2>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Testez les flows OAuth avant de les integrer dans votre application.
-              </p>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <a
-                  href={`/api/auth/google?app=AdminTest&redirect_uri=${window.location.origin}/admin`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    {getProviderIcon('google')}
-                    <span className="font-medium text-gray-900">Tester Google</span>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-gray-400" />
-                </a>
-                <a
-                  href={`/api/auth/github?app=AdminTest&redirect_uri=${window.location.origin}/admin`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    {getProviderIcon('github')}
-                    <span className="font-medium">Tester GitHub</span>
-                  </div>
-                  <ExternalLink className="w-4 h-4 opacity-70" />
-                </a>
-              </div>
-            </div>
-
-            {/* Apps Stats */}
-            {stats?.loginsByApp?.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <BarChart3 className="w-5 h-5 text-gray-600" />
-                  <h2 className="font-semibold text-gray-900">Connexions par application</h2>
-                </div>
-                <div className="space-y-4">
-                  {stats.loginsByApp.map((item) => {
-                    const maxCount = Math.max(...stats.loginsByApp.map(i => i._count.id));
-                    const percentage = maxCount > 0 ? (item._count.id / maxCount) * 100 : 0;
-                    return (
-                      <div key={item.appName}>
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">{item.appName}</span>
-                          <span className="text-gray-500">{item._count.id}</span>
-                        </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-blue-600 rounded-full"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
+            ) : (
+              <>
+                {/* Stats Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5 mb-6">
+                  <div className="glass-card p-5 rounded-2xl group hover:border-slate-700/50 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-3.5">
+                      <span className="text-xs font-bold text-slate-400">Utilisateurs</span>
+                      <div className="w-8.5 h-8.5 bg-blue-500/10 text-blue-450 border border-blue-500/20 rounded-xl flex items-center justify-center">
+                        <Users className="w-4 h-4 text-blue-400" />
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                    </div>
+                    <div className="text-2xl font-extrabold text-white tracking-tight">
+                      {stats?.totalUsers || 0}
+                    </div>
+                  </div>
 
-            {/* Recent Logins */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="flex items-center gap-2 p-6 border-b border-gray-200">
-                <Clock className="w-5 h-5 text-gray-600" />
-                <h2 className="font-semibold text-gray-900">Connexions recentes</h2>
-              </div>
+                  <div className="glass-card p-5 rounded-2xl group hover:border-slate-700/50 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-3.5">
+                      <span className="text-xs font-bold text-slate-400">Connexions</span>
+                      <div className="w-8.5 h-8.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-xl flex items-center justify-center">
+                        <Activity className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <div className="text-2xl font-extrabold text-white tracking-tight">
+                      {stats?.totalLogins || 0}
+                    </div>
+                  </div>
 
-              {stats?.recentLogins?.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">
-                          Utilisateur
-                        </th>
-                        <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">
-                          App
-                        </th>
-                        <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">
-                          Provider
-                        </th>
-                        <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">
-                          Statut
-                        </th>
-                        <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">
-                          Date
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {stats.recentLogins.map((login) => (
-                        <tr key={login.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              {login.user?.avatar ? (
-                                <img
-                                  src={login.user.avatar}
-                                  alt=""
-                                  className="w-8 h-8 rounded-full"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                  <Mail className="w-4 h-4 text-gray-500" />
-                                </div>
-                              )}
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">
-                                  {login.user?.name || 'N/A'}
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  {login.user?.email || 'N/A'}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
-                              {login.appName}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              {getProviderIcon(login.provider)}
-                              <span className="text-sm text-gray-600 capitalize">{login.provider}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            {login.status === 'success' ? (
-                              <span className="inline-flex items-center gap-1 text-sm text-green-700">
-                                <CheckCircle className="w-4 h-4" />
-                                Succes
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-sm text-red-600">
-                                <XCircle className="w-4 h-4" />
-                                Echec
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {formatDate(login.timestamp)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <div className="glass-card p-5 rounded-2xl group hover:border-slate-700/50 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-3.5">
+                      <span className="text-xs font-bold text-slate-400">Google Auth</span>
+                      <div className="w-8.5 h-8.5 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                        {getProviderIcon('google')}
+                      </div>
+                    </div>
+                    <div className="text-2xl font-extrabold text-white tracking-tight">
+                      {stats?.loginsByProvider?.find(p => p.provider === 'google')?._count?.id || 0}
+                    </div>
+                  </div>
+
+                  <div className="glass-card p-5 rounded-2xl group hover:border-slate-700/50 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-3.5">
+                      <span className="text-xs font-bold text-slate-400">GitHub Auth</span>
+                      <div className="w-8.5 h-8.5 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                        {getProviderIcon('github')}
+                      </div>
+                    </div>
+                    <div className="text-2xl font-extrabold text-white tracking-tight">
+                      {stats?.loginsByProvider?.find(p => p.provider === 'github')?._count?.id || 0}
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Activity className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">Aucune connexion enregistree</p>
-                  <p className="text-sm text-gray-400 mt-1">
-                    Utilisez les boutons de test ci-dessus
+
+                {/* Test Section Card */}
+                <div className="glass-card p-6.5 rounded-2xl mb-6">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <TrendingUp className="w-5 h-5 text-blue-400" />
+                    <h2 className="font-bold text-base text-slate-100">Zone de test OAuth2</h2>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-5 max-w-xl leading-relaxed">
+                    Testez instantanément les flux de redirection OAuth avant de coder leur intégration dans vos propres applications.
                   </p>
+                  <div className="grid sm:grid-cols-2 gap-3.5">
+                    <a
+                      href={`/api/auth/google?app=AdminTest&redirect_uri=${window.location.origin}/admin`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between px-4 py-3 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-sm"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {getProviderIcon('google')}
+                        <span>Tester avec Google</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                    </a>
+                    <a
+                      href={`/api/auth/github?app=AdminTest&redirect_uri=${window.location.origin}/admin`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700/50 shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-sm"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {getProviderIcon('github')}
+                        <span>Tester avec GitHub</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                    </a>
+                  </div>
                 </div>
-              )}
-            </div>
-          </>
-        )}
-      </main>
+
+                {/* Apps Stats Card */}
+                {stats?.loginsByApp?.length > 0 && (
+                  <div className="glass-card p-6.5 rounded-2xl mb-6">
+                    <div className="flex items-center gap-2 mb-5">
+                      <BarChart3 className="w-5 h-5 text-blue-400" />
+                      <h2 className="font-bold text-base text-slate-100">Connexions par application</h2>
+                    </div>
+                    <div className="space-y-4">
+                      {stats.loginsByApp.map((item) => {
+                        const maxCount = Math.max(...stats.loginsByApp.map(i => i._count.id));
+                        const percentage = maxCount > 0 ? (item._count.id / maxCount) * 100 : 0;
+                        return (
+                          <div key={item.appName} className="group">
+                            <div className="flex items-center justify-between text-xs mb-1.5">
+                              <span className="font-bold text-slate-350">{item.appName}</span>
+                              <span className="font-mono text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-md text-[10px] border border-slate-700/30">{item._count.id}</span>
+                            </div>
+                            <div className="h-2 bg-slate-900/60 rounded-full overflow-hidden border border-blue-900/10 p-0.5">
+                              <div
+                                className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.3)] transition-all duration-500 group-hover:from-blue-400 group-hover:to-cyan-400"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Logins Table Card */}
+                <div className="glass-card rounded-2xl overflow-hidden shadow-2xl border border-blue-950/20">
+                  <div className="flex items-center gap-2.5 p-5 border-b border-blue-950/20 bg-slate-900/10">
+                    <Clock className="w-5 h-5 text-blue-400" />
+                    <h2 className="font-bold text-base text-slate-100">Connexions récentes</h2>
+                  </div>
+
+                  {stats?.recentLogins?.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-slate-900/30">
+                            <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-5 py-3 border-b border-blue-950/20">
+                              Utilisateur
+                            </th>
+                            <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-5 py-3 border-b border-blue-950/20">
+                              App
+                            </th>
+                            <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-5 py-3 border-b border-blue-950/20">
+                              Provider
+                            </th>
+                            <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-5 py-3 border-b border-blue-950/20">
+                              Statut
+                            </th>
+                            <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider px-5 py-3 border-b border-blue-950/20">
+                              Date
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-blue-950/20">
+                          {stats.recentLogins.map((login) => (
+                            <tr key={login.id} className="hover:bg-slate-900/15 transition-colors">
+                              <td className="px-5 py-3.5">
+                                <div className="flex items-center gap-2.5">
+                                  {login.user?.avatar ? (
+                                    <img
+                                      src={login.user.avatar}
+                                      alt=""
+                                      className="w-8 h-8 rounded-full border border-blue-900/20 shadow-sm"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-full bg-slate-800 border border-blue-900/20 flex items-center justify-center text-slate-400">
+                                      <Mail className="w-4 h-4" />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="text-xs font-bold text-slate-100">
+                                      {login.user?.name || 'N/A'}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 mt-0.5">
+                                      {login.user?.email || 'N/A'}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-5 py-3.5">
+                                <span className="inline-flex px-2 py-0.5 text-[10px] font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded">
+                                  {login.appName}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center border border-blue-900/10">
+                                    {getProviderIcon(login.provider)}
+                                  </span>
+                                  <span className="text-xs font-medium text-slate-300 capitalize">{login.provider}</span>
+                                </div>
+                              </td>
+                              <td className="px-5 py-3.5">
+                                {login.status === 'success' ? (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 rounded">
+                                    <span className="w-1.2 h-1.2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    Succès
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-rose-500/10 text-rose-450 border border-rose-500/25 rounded">
+                                    <span className="w-1.2 h-1.2 rounded-full bg-rose-400"></span>
+                                    Échec
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-5 py-3.5 text-xs font-medium text-slate-400">
+                                {formatDate(login.timestamp)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Activity className="w-10 h-10 text-slate-650 mx-auto mb-3 animate-pulse" />
+                      <p className="text-slate-300 font-bold text-sm">Aucune connexion enregistrée</p>
+                      <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                        Utilisez les boutons de test de la zone ci-dessus pour simuler une authentification.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 4. IDE Status Bar */}
+      <div className="h-6 bg-[#005fb8] text-white flex items-center justify-between px-3 text-xs flex-shrink-0 font-mono select-none relative z-50">
+        <div className="flex items-center gap-3">
+          <div className="bg-[#007acc] px-2 h-full flex items-center gap-1 font-bold">
+            <GitBranch className="w-3.5 h-3.5" />
+            <span>main</span>
+          </div>
+          <div className="flex items-center gap-1 text-slate-100">
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Vercel: Connecté</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 text-slate-200">
+          <span>Ln 320, Col 1</span>
+          <span>Espaces: 2</span>
+          <span>UTF-8</span>
+          <span className="bg-[#007acc] px-2 h-full flex items-center font-bold">React (JSX)</span>
+        </div>
+      </div>
+
     </div>
   );
 };

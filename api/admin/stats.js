@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma.js';
 
 export default async function handler(req, res) {
   // Simple protection: only allow GET and maybe check a secret or admin email
