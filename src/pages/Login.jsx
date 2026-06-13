@@ -2,7 +2,7 @@ import React from 'react';
 import { Shield, Code, ArrowRight, CheckCircle, Lock, Zap } from 'lucide-react';
 
 const Login = () => {
-  const serviceUrl = window.location.origin;
+  const serviceUrl = "https://authentifictor-git-main-raveliop12345s-projects.vercel.app";
 
   return (
     <div className="bg-white min-h-screen">
@@ -94,6 +94,7 @@ const Login = () => {
                     <ul className="mt-2 text-sm text-blue-700 space-y-1">
                       <li><strong>app</strong> : Le nom public de votre application (affiché dans l'admin).</li>
                       <li><strong>redirect_uri</strong> : L'URL exacte de votre application où l'utilisateur doit être renvoyé.</li>
+                      <li><strong>email</strong> (Optionnel) : Pour Google, pré-remplit l'adresse mail de l'utilisateur sur la page de connexion.</li>
                     </ul>
                   </div>
                 </div>
