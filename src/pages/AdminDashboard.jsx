@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Card, Title, Text, Metric, Grid, Col, Flex, TabGroup, TabList, Tab, TabPanels, TabPanel, BarChart } from '@tremor/react';
+import { Users, Activity, Globe, Zap, Shield } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
-const { Users, Activity, Globe } = LucideIcons;
 const Github = LucideIcons.Github || LucideIcons.GitHub;
 
 const AdminDashboard = () => {
@@ -21,157 +21,61 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchStats();
   }, []);
 
-  if (loading) return <div className="flex justify-center items-center h-64">Chargement...</div>;
-  if (!stats) return <div className="text-center py-12">Erreur lors de la récupération des données.</div>;
-
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  if (loading) return <div className="p-8 text-center">Chargement des données...</div>;
 
   return (
-    <div className="space-y-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord Admin</h1>
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Tableau de Bord Authentifictor</h1>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-            <Users size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Utilisateurs Totaux</p>
-            <p className="text-2xl font-bold">{stats.totalUsers}</p>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-green-50 rounded-lg text-green-600">
-            <Activity size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Connexions Totales</p>
-            <p className="text-2xl font-bold">{stats.totalLogins}</p>
-          </div>
-        </div>
-      </div>
+      {/* KPI Cards */}
+      <Grid numItems={1} numItemsSm={2} numItemsLg={4} className="gap-6 mb-8">
+        <Card>
+          <Flex alignItems="start">
+            <Text>Utilisateurs Totaux</Text>
+            <Users size={18} className="text-blue-600" />
+          </Flex>
+          <Metric>{stats.totalUsers}</Metric>
+        </Card>
+        <Card>
+          <Flex alignItems="start">
+            <Text>Connexions Totales</Text>
+            <Activity size={18} className="text-green-600" />
+          </Flex>
+          <Metric>{stats.totalLogins}</Metric>
+        </Card>
+      </Grid>
 
-      {/* API Tester Section */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <div className="flex items-center space-x-2 mb-6 text-orange-600">
-          <Zap size={20} />
-          <h2 className="text-lg font-semibold">Zone de Test API</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="font-medium text-gray-800 mb-2">Test Google Auth</h3>
-            <p className="text-sm text-gray-600 mb-4">Simule une requête d'authentification Google avec une app de test.</p>
-            <button 
-              onClick={() => window.open(`/api/auth/google?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')}
-              className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center justify-center space-x-2"
-            >
-              <Globe size={16} />
-              <span>Tester Google</span>
-            </button>
-          </div>
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="font-medium text-gray-800 mb-2">Test Github Auth</h3>
-            <p className="text-sm text-gray-600 mb-4">Simule une requête d'authentification Github avec une app de test.</p>
-            <button 
-              onClick={() => window.open(`/api/auth/github?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')}
-              className="w-full py-2 bg-gray-900 text-white rounded-md hover:bg-black transition flex items-center justify-center space-x-2"
-            >
-              <Github size={16} />
-              <span>Tester Github</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* API Tester */}
+      <Card className="mb-8">
+        <Flex className="mb-6">
+          <Title className="flex items-center gap-2 text-orange-600">
+            <Zap size={20} /> Zone de Test API
+          </Title>
+        </Flex>
+        <Grid numItems={1} numItemsMd={2} className="gap-4">
+          <button onClick={() => window.open(`/api/auth/google?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')} className="p-4 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 flex items-center justify-center gap-2">
+            <Globe size={16} /> Tester Google Auth
+          </button>
+          <button onClick={() => window.open(`/api/auth/github?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')} className="p-4 bg-gray-900 text-white rounded-lg hover:bg-black flex items-center justify-center gap-2">
+            <Github size={16} /> Tester Github Auth
+          </button>
+        </Grid>
+      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Logins by App */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h2 className="text-lg font-semibold mb-6">Connexions par Application</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.loginsByApp.map(item => ({ name: item.appName, count: item._count.id }))}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Logins by Provider */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h2 className="text-lg font-semibold mb-6">Répartition par Fournisseur</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={stats.loginsByProvider.map(item => ({ name: item.provider, value: item._count.id }))}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {stats.loginsByProvider.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-semibold">Activités Récentes</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
-              <tr>
-                <th className="px-6 py-3">Utilisateur</th>
-                <th className="px-6 py-3">Application</th>
-                <th className="px-6 py-3">Fournisseur</th>
-                <th className="px-6 py-3">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {stats.recentLogins.map((login) => (
-                <tr key={login.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 flex items-center space-x-3">
-                    <img src={login.user.avatar} alt="" className="w-8 h-8 rounded-full" />
-                    <span className="font-medium text-gray-700">{login.user.email}</span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{login.appName}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      login.provider === 'google' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {login.provider === 'google' ? <Globe size={12} className="mr-1" /> : <Github size={12} className="mr-1" />}
-                      {login.provider}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-500 text-sm">
-                    {new Date(login.timestamp).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Charts */}
+      <Card>
+        <Title>Activités par Application</Title>
+        <BarChart
+          className="mt-6"
+          data={stats.loginsByApp.map(item => ({ name: item.appName, "Connexions": item._count.id }))}
+          index="name"
+          categories={["Connexions"]}
+          colors={["blue"]}
+        />
+      </Card>
     </div>
   );
 };
