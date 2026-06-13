@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
       redirect_uri: process.env.NODE_ENV === 'production' 
-        ? 'https://authentifictor.vercel.app/api/callback/google'
+        ? 'https://authentificator.vercel.app/api/callback/google'
         : 'http://localhost:5173/api/callback/google',
       grant_type: 'authorization_code',
     });
