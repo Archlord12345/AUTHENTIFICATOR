@@ -248,12 +248,12 @@ const Login = () => {
                   </p>
                   <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-sm text-gray-300 font-mono">
-{
+{`{
   "id": "usr_abc123",
   "email": "user@example.com",
   "name": "Jean Dupont",
   "app": "MonApp"
-}
+}`}
                     </pre>
                   </div>
                 </div>
