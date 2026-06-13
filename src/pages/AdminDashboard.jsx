@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Users, Activity, Globe, Github } from 'lucide-react';
+import { Users, Activity, Globe, GitHub } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -124,7 +124,7 @@ const AdminDashboard = () => {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       login.provider === 'google' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {login.provider === 'google' ? <Globe size={12} className="mr-1" /> : <Github size={12} className="mr-1" />}
+                      {login.provider === 'google' ? <Globe size={12} className="mr-1" /> : <GitHub size={12} className="mr-1" />}
                       {login.provider}
                     </span>
                   </td>
