@@ -1,16 +1,40 @@
-# React + Vite
+# Authentifictor Service
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Un service d'authentification centralisé (Identity Provider) pour vos applications, utilisant OAuth 2.0 (Google & GitHub).
 
-Currently, two official plugins are available:
+## 🚀 Fonctionnalités
+- Authentification unifiée via Google & GitHub.
+- Génération et validation de tokens JWT sécurisés.
+- Tableau de bord administrateur (Panel Admin) pour le suivi des connexions en temps réel.
+- Base de données PostgreSQL pour l'historique et les statistiques.
+- Documentation développeur intégrée.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠 Technologies & Frameworks
 
-## React Compiler
+### Frontend
+- **ReactJS (Vite) :** Interface utilisateur moderne et rapide.
+- **Tailwind CSS :** Framework de style utilitaire pour une interface réactive.
+- **Tremor :** Framework de composants UI spécialisé pour les tableaux de bord.
+- **Lucide React :** Bibliothèque d'icônes.
+- **Recharts :** Visualisation de données pour le panel admin.
+- **Axios :** Client HTTP pour la communication API.
+- **React Router :** Gestion de la navigation.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Backend (Serverless)
+- **Node.js (Vercel Functions) :** Exécution du code backend côté serveur sans gestion d'infrastructure.
+- **Passport.js :** Middleware d'authentification pour gérer les stratégies Google et GitHub.
+- **JSON Web Token (jsonwebtoken) :** Gestion de la session utilisateur.
 
-## Expanding the ESLint configuration
+### Base de données & Infra
+- **Neon PostgreSQL :** Base de données SQL serverless haute performance.
+- **Prisma ORM :** Interface de programmation pour interagir avec la base de données.
+- **Vercel :** Plateforme de déploiement pour le frontend et les fonctions API.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📖 Guide d'Intégration
+Consultez le fichier [DOCS.md](DOCS.md) pour apprendre comment connecter vos applications à ce service.
+
+## 🔒 Sécurité
+- Utilisation des standards OAuth2.
+- Protection CSRF (via état).
+- Variables d'environnement sécurisées (via Vercel).
+- Tokens JWT signés.
