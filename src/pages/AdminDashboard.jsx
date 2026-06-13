@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Users, Activity, Globe, GitHub } from 'lucide-react';
+import { Users, Activity, Globe, Github } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -72,14 +72,14 @@ const AdminDashboard = () => {
             </button>
           </div>
           <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="font-medium text-gray-800 mb-2">Test GitHub Auth</h3>
-            <p className="text-sm text-gray-600 mb-4">Simule une requête d'authentification GitHub avec une app de test.</p>
+            <h3 className="font-medium text-gray-800 mb-2">Test Github Auth</h3>
+            <p className="text-sm text-gray-600 mb-4">Simule une requête d'authentification Github avec une app de test.</p>
             <button 
               onClick={() => window.open(`/api/auth/github?app=AdminTest&redirect_uri=${window.location.origin}/admin`, '_blank')}
               className="w-full py-2 bg-gray-900 text-white rounded-md hover:bg-black transition flex items-center justify-center space-x-2"
             >
-              <GitHub size={16} />
-              <span>Tester GitHub</span>
+              <Github size={16} />
+              <span>Tester Github</span>
             </button>
           </div>
         </div>
@@ -156,7 +156,7 @@ const AdminDashboard = () => {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       login.provider === 'google' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {login.provider === 'google' ? <Globe size={12} className="mr-1" /> : <GitHub size={12} className="mr-1" />}
+                      {login.provider === 'google' ? <Globe size={12} className="mr-1" /> : <Github size={12} className="mr-1" />}
                       {login.provider}
                     </span>
                   </td>
