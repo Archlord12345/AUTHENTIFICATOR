@@ -3,9 +3,6 @@
 -- Optimized for Neon PostgreSQL
 -- -----------------------------------------------------------------------------
 
--- Enable UUID extension if needed (though we use CUID/Strings in Prisma)
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- 1. Users Table: Stores unique identity of users
 CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT PRIMARY KEY,               -- Matches Prisma CUID
