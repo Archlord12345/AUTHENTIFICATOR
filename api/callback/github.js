@@ -17,7 +17,9 @@ export default async function handler(req, res) {
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,
       code,
-      redirect_uri: `https://${req.headers.host}/api/callback/github`,
+      redirect_uri: process.env.NODE_ENV === 'production' 
+        ? 'https://authentificator.vercel.app/api/callback/github'
+        : 'http://localhost:5173/api/callback/github',
     }, {
       headers: { Accept: 'application/json' }
     });
