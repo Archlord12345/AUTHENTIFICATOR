@@ -6,7 +6,9 @@ export default async function handler(req, res) {
   }
 
   const githubClientId = process.env.GITHUB_CLIENT_ID;
-  const callbackUrl = `https://${req.headers.host}/api/callback/github`;
+  const callbackUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://authentificator.vercel.app/api/callback/github'
+    : 'http://localhost:5173/api/callback/github';
   
   const state = Buffer.from(JSON.stringify({ app, redirect_uri })).toString('base64');
 
