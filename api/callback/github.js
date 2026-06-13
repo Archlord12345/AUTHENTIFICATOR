@@ -1,97 +1,135 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../lib/prisma.js';
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
 
+  console.log('[GitHub OAuth] Callback received with code:', code ? '***' : 'MISSING');
+
   if (!code || !state) {
+    console.error('[GitHub OAuth] Missing code or state');
     return res.status(400).json({ error: 'Missing code or state' });
   }
 
   try {
-    const { app, redirect_uri } = JSON.parse(Buffer.from(state, 'base64').toString());
+    // Parse state parameter
+    let stateData;
+    try {
+      stateData = JSON.parse(Buffer.from(state, 'base64').toString());
+    } catch (e) {
+      console.error('[GitHub OAuth] Failed to parse state:', e.message);
+      return res.status(400).json({ error: 'Invalid state parameter' });
+    }
+
+    const { app, redirect_uri } = stateData;
+
+    if (!redirect_uri) {
+      console.error('[GitHub OAuth] Missing redirect_uri in state');
+      return res.status(400).json({ error: 'Missing redirect_uri' });
+    }
+
+    console.log('[GitHub OAuth] Exchanging code for token...');
 
     // Exchange code for access token
-    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
-      client_id: process.env.GITHUB_CLIENT_ID,
-      client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code,
-      redirect_uri: process.env.NODE_ENV === 'production' 
-        ? 'https://authentificator.vercel.app/api/callback/github'
-        : 'http://localhost:5173/api/callback/github',
-    }, {
-      headers: { Accept: 'application/json' }
-    });
+    const tokenResponse = await axios.post(
+      'https://github.com/login/oauth/access_token',
+      {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code,
+        redirect_uri:
+          process.env.NODE_ENV === 'production'
+            ? 'https://authentificator.vercel.app/api/callback/github'
+            : 'http://localhost:5173/api/callback/github',
+      },
+      { headers: { Accept: 'application/json' } }
+    );
 
-    const { access_token } = tokenResponse.data;
+    const { access_token, error: tokenError } = tokenResponse.data;
+
+    if (tokenError || !access_token) {
+      console.error('[GitHub OAuth] Token exchange failed:', tokenError || 'No token');
+      return res.status(400).json({ error: 'Failed to exchange code for token' });
+    }
+
+    console.log('[GitHub OAuth] Token received, fetching user profile...');
 
     // Get user profile
     const userResponse = await axios.get('https://api.github.com/user', {
-      headers: { Authorization: `Bearer ${access_token}` }
+      headers: { Authorization: `Bearer ${access_token}` },
     });
 
     const profile = userResponse.data;
+    console.log('[GitHub OAuth] Profile fetched:', profile.login);
 
-    // GitHub doesn't always provide a public email, might need to fetch it separately
+    // GitHub doesn't always provide a public email
     let email = profile.email;
     if (!email) {
+      console.log('[GitHub OAuth] No public email, fetching from emails endpoint...');
       const emailsResponse = await axios.get('https://api.github.com/user/emails', {
-        headers: { Authorization: `Bearer ${access_token}` }
+        headers: { Authorization: `Bearer ${access_token}` },
       });
-      const primaryEmail = emailsResponse.data.find(e => e.primary && e.verified);
-      email = primaryEmail ? primaryEmail.email : emailsResponse.data[0].email;
+      const primaryEmail = emailsResponse.data.find(
+        (e) => e.primary && e.verified
+      );
+      email = primaryEmail
+        ? primaryEmail.email
+        : emailsResponse.data[0]?.email;
     }
 
-    // Upsert user in DB
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {
-        name: profile.name || profile.login,
-        avatar: profile.avatar_url,
-      },
-      create: {
-        email,
-        name: profile.name || profile.login,
-        avatar: profile.avatar_url,
-      },
-    });
+    if (!email) {
+      console.error('[GitHub OAuth] No email found for user');
+      return res.status(400).json({ error: 'Unable to retrieve email from GitHub' });
+    }
 
-    // Log the login
-    await prisma.loginLog.create({
-      data: {
-        userId: user.id,
-        appName: app,
-        provider: 'github',
-        status: 'success',
-      },
-    });
+    console.log('[GitHub OAuth] Email obtained:', email);
 
-    // Create JWT for the client app
+    // Create JWT token (no database required)
+    const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
     const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name, app },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      {
+        id: `github_${profile.id}`,
+        email: email,
+        name: profile.name || profile.login,
+        avatar: profile.avatar_url,
+        provider: 'github',
+        githubId: profile.id,
+        app: app || 'Authentificator',
+      },
+      jwtSecret,
+      { expiresIn: '7d' }
     );
 
-    // Redirect back to client app
+    console.log('[GitHub OAuth] JWT token generated, redirecting...');
+
+    // Redirect back to client app with token
     const finalRedirectUrl = new URL(redirect_uri);
     finalRedirectUrl.searchParams.append('status', 'success');
-    finalRedirectUrl.searchParams.append('app', app);
     finalRedirectUrl.searchParams.append('token', token);
+    finalRedirectUrl.searchParams.append('provider', 'github');
 
     res.redirect(finalRedirectUrl.toString());
 
   } catch (error) {
-    console.error('GitHub Callback Error:', error);
+    console.error('[GitHub OAuth] Error:', error.message);
+    if (error.response) {
+      console.error('[GitHub OAuth] Response:', error.response.status, error.response.data);
+    }
+
+    // Redirect to callback page with error
     try {
-      const { redirect_uri, app } = JSON.parse(Buffer.from(state, 'base64').toString());
-      const finalRedirectUrl = new URL(redirect_uri);
-      finalRedirectUrl.searchParams.append('status', 'failure');
-      finalRedirectUrl.searchParams.append('app', app);
-      return res.redirect(finalRedirectUrl.toString());
+      const stateData = JSON.parse(Buffer.from(state, 'base64').toString());
+      const { redirect_uri } = stateData;
+      const errorUrl = new URL(redirect_uri);
+      errorUrl.searchParams.append('status', 'failure');
+      errorUrl.searchParams.append('error', error.message);
+      return res.redirect(errorUrl.toString());
     } catch (e) {
-      res.status(500).json({ error: 'Authentication failed' });
+      console.error('[GitHub OAuth] Failed to redirect on error:', e.message);
+      return res.status(500).json({
+        error: 'Authentication failed',
+        details: error.message,
+      });
     }
   }
 }
