@@ -87,9 +87,17 @@ export default async function handler(req, res) {
     // Create Firebase Custom Token
     const userId = `github_${profile.id}`;
     console.log('[GitHub OAuth] Creating Firebase custom token for user:', userId);
-    const customToken = await createCustomToken(userId);
+    
+    let customToken;
+    try {
+      customToken = await createCustomToken(userId);
+      console.log('[GitHub OAuth] Firebase custom token created successfully');
+    } catch (firebaseError) {
+      console.error('[GitHub OAuth] Firebase token creation failed:', firebaseError.message);
+      throw new Error(`Firebase authentication failed: ${firebaseError.message}`);
+    }
 
-    console.log('[GitHub OAuth] Firebase custom token created, redirecting...');
+    console.log('[GitHub OAuth] Preparing redirect with token...');
 
     // Redirect back to client app with customToken
     const finalRedirectUrl = new URL(redirect_uri);

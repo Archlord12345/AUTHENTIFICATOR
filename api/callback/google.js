@@ -75,9 +75,17 @@ export default async function handler(req, res) {
     // Create Firebase Custom Token
     const userId = `google_${profile.sub}`;
     console.log('[Google OAuth] Creating Firebase custom token for user:', userId);
-    const customToken = await createCustomToken(userId);
+    
+    let customToken;
+    try {
+      customToken = await createCustomToken(userId);
+      console.log('[Google OAuth] Firebase custom token created successfully');
+    } catch (firebaseError) {
+      console.error('[Google OAuth] Firebase token creation failed:', firebaseError.message);
+      throw new Error(`Firebase authentication failed: ${firebaseError.message}`);
+    }
 
-    console.log('[Google OAuth] Firebase custom token created, redirecting...');
+    console.log('[Google OAuth] Preparing redirect with token...');
 
     // Redirect back to client app with customToken
     const finalRedirectUrl = new URL(redirect_uri);
