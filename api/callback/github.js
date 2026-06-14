@@ -1,5 +1,5 @@
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
+import { createCustomToken } from '../lib/firebase.js';
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
@@ -84,29 +84,22 @@ export default async function handler(req, res) {
 
     console.log('[GitHub OAuth] Email obtained:', email);
 
-    // Create JWT token (no database required)
-    const jwtSecret = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
-    const token = jwt.sign(
-      {
-        id: `github_${profile.id}`,
-        email: email,
-        name: profile.name || profile.login,
-        avatar: profile.avatar_url,
-        provider: 'github',
-        githubId: profile.id,
-        app: app || 'Authentificator',
-      },
-      jwtSecret,
-      { expiresIn: '7d' }
-    );
+    // Create Firebase Custom Token
+    const userId = `github_${profile.id}`;
+    console.log('[GitHub OAuth] Creating Firebase custom token for user:', userId);
+    const customToken = await createCustomToken(userId);
 
-    console.log('[GitHub OAuth] JWT token generated, redirecting...');
+    console.log('[GitHub OAuth] Firebase custom token created, redirecting...');
 
-    // Redirect back to client app with token
+    // Redirect back to client app with customToken
     const finalRedirectUrl = new URL(redirect_uri);
     finalRedirectUrl.searchParams.append('status', 'success');
-    finalRedirectUrl.searchParams.append('token', token);
+    finalRedirectUrl.searchParams.append('customToken', customToken);
     finalRedirectUrl.searchParams.append('provider', 'github');
+    finalRedirectUrl.searchParams.append('uid', userId);
+    finalRedirectUrl.searchParams.append('email', email);
+    finalRedirectUrl.searchParams.append('name', profile.name || profile.login);
+    finalRedirectUrl.searchParams.append('avatar', profile.avatar_url || '');
 
     res.redirect(finalRedirectUrl.toString());
 
